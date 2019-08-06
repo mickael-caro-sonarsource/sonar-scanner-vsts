@@ -3,6 +3,8 @@ import Scanner, { ScannerMode } from './sonarqube/Scanner';
 import TaskReport from './sonarqube/TaskReport';
 import * as azdoApiUtils from './helpers/azdo-api-utils';
 
+const TASKID_PROPERTY_NAME = 'sonarcloudtaskid';
+
 export default async function analyzeTask(rootPath: string) {
   const scannerMode: ScannerMode = ScannerMode[tl.getVariable('SONARQUBE_SCANNER_MODE')];
   if (!scannerMode) {
@@ -15,15 +17,5 @@ export default async function analyzeTask(rootPath: string) {
 
   const taskReports = await TaskReport.createTaskReportsFromFiles();
 
-  azdoApiUtils.getVariableGroup().then((variableGroup: azdoApiUtils.VariableGroup)=> {
-
-    tl.debug('Returned : ' + JSON.stringify(variableGroup));
-    const buildNumber = tl.getVariable('Build.BuildNumber');
-    const ceTaskId = taskReports[0].ceTaskId;
-    if (variableGroup === null) {
-      azdoApiUtils.createVariableGroup(buildNumber, ceTaskId);
-    } else {
-      azdoApiUtils.updateVariableGroup(variableGroup, buildNumber, ceTaskId);
-    }
-  });
+  azdoApiUtils.addBuildProperty(TASKID_PROPERTY_NAME, taskReports[0].ceTaskId).then(()=> {});
 }
