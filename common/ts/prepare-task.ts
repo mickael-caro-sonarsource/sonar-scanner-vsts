@@ -9,7 +9,6 @@ import { getAuthToken } from './helpers/azdo-server-utils';
 
 const REPO_NAME_VAR = 'Build.Repository.Name';
 
-
 export default async function prepareTask(endpoint: Endpoint, rootPath: string) {
   if (
     endpoint.type === EndpointType.SonarQube &&

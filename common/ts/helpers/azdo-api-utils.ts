@@ -2,20 +2,36 @@ import * as tl from 'azure-pipelines-task-lib/task';
 import * as request from 'request';
 import { getAuthToken } from './azdo-server-utils';
 
-export function addBuildProperty(propertyName: string, propertyValue: string)
-: Promise<any> {
+export interface IPropertyBag {
+  propertyName: string;
+  propertyValue: string;
+}
+
+interface IJsonPatchBody {
+  op: string;
+  path: string;
+  value: string;
+}
+
+export function addBuildProperty(properties: IPropertyBag[]): Promise<any> {
   return new Promise((resolve, reject) => {
-    var collectionUri = tl.getVariable('System.TeamFoundationCollectionUri') + '/';
-    var teamProjectId = tl.getVariable('System.TeamProjectId') + '/';
-    var buildId = tl.getVariable('Build.BuildId');
-  
-    var bodyToPost = `[{
-      "op": "add", "path": "/${propertyName}" , "value": "${propertyValue}"
-    }]`;
+    const collectionUri = tl.getVariable('System.TeamFoundationCollectionUri') + '/';
+    const teamProjectId = tl.getVariable('System.TeamProjectId') + '/';
+    const buildId = tl.getVariable('Build.BuildId');
 
-    tl.debug(bodyToPost);
+    const patchBody: IJsonPatchBody[] = [];
 
-    var options = {
+    properties.forEach((property: IPropertyBag) => {
+      patchBody.push({
+        op: 'add',
+        path: `/${property.propertyName}`,
+        value: `${property.propertyValue}`
+      });
+    });
+
+    tl.debug(JSON.stringify(patchBody));
+
+    const options = {
       url:
         collectionUri +
         teamProjectId +
@@ -26,7 +42,7 @@ export function addBuildProperty(propertyName: string, propertyValue: string)
       auth: {
         bearer: getAuthToken()
       },
-      body: bodyToPost
+      body: JSON.stringify(patchBody)
     };
 
     request.patch(options, (error, response, body) => {
