@@ -1,11 +1,14 @@
+import * as path from 'path';
 import * as semver from 'semver';
 import * as tl from 'azure-pipelines-task-lib/task';
 import * as vm from 'azure-devops-node-api';
+import { Guid } from 'guid-typescript';
 import Endpoint, { EndpointType } from './sonarqube/Endpoint';
 import Scanner, { ScannerMode } from './sonarqube/Scanner';
 import { toCleanJSON } from './helpers/utils';
 import { getServerVersion } from './helpers/request';
 import { getAuthToken } from './helpers/azdo-server-utils';
+import { REPORT_TASK_NAME, SONAR_TEMP_DIRECTORY_NAME } from './sonarqube/TaskReport';
 
 const REPO_NAME_VAR = 'Build.Repository.Name';
 
@@ -35,6 +38,8 @@ export default async function prepareTask(endpoint: Endpoint, rootPath: string) 
     .filter(keyValue => !keyValue.startsWith('#'))
     .map(keyValue => keyValue.split(/=(.+)/))
     .forEach(([k, v]) => (props[k] = v));
+
+  props['sonar.scanner.metadataFilePath'] = reportPath();
 
   tl.setVariable('SONARQUBE_SCANNER_MODE', scannerMode);
   tl.setVariable('SONARQUBE_ENDPOINT', endpoint.toJson(), true);
@@ -117,6 +122,16 @@ function branchName(fullName: string) {
     return fullName.substring('refs/heads/'.length);
   }
   return fullName;
+}
+
+export function reportPath(): string {
+  return path.join(
+    tl.getVariable('Agent.TempDirectory'),
+    SONAR_TEMP_DIRECTORY_NAME,
+    tl.getVariable('Build.BuildNumber'),
+    Guid.create().toString(),
+    REPORT_TASK_NAME
+  );
 }
 
 /**
