@@ -35,6 +35,9 @@ If you configure your build definition as a build validation for pull requests o
 **Important note**: to activate pull request decoration, you must specify a user token in the "General Settings > Pull Requests" administration page of your project in SonarQube.
 
 ### Quality Gate Status
+
+#### In the build summary
+
 The **Publish Quality Gate Result** task waits for the analysis report to be consumed by the SonarQube in order to flag the build job with the Quality Gate status. The Quality Gate is a major, out-of-the-box, feature of SonarQube. It provides the ability to know at each analysis whether an application passes or fails the release criteria. In other words it tells you at every analysis whether an application is ready for production "quality-wise".
 
 Example of a passing Quality Gate:
@@ -43,6 +46,9 @@ Example of a passing Quality Gate:
 Example of a failing Quality Gate:
 ![Failed Qualiy Gate](img/sq-analysis-report-failed.png)
 
+#### In Release Pipelines (Preview)
+
+You can check the quality gate status of a build as a pre-deployment gate in release pipelines (starting from Azure DevOps Server 2019).
 
 This [Get Started][getstarted] guide provides all the required documentation for you to setup a build definition.
 
