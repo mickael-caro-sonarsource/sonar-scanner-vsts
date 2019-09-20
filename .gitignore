@@ -1,5 +1,8 @@
 # build
 build/
+**/bin
+**/obj
+**/.vs
 
 # VS Code
 .vscode/
