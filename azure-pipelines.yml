@@ -13,29 +13,34 @@ steps:
 - task: Npm@1
   inputs:
     command: 'install'
-  displayName: 'npm install'
+  displayName: 'Install base packages'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run install-dep'
+  displayName: 'Install dependencies'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run clean'
+  displayName: 'Cleaning existing resources'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run validate-ci'
+  displayName: 'Executing lint, formatting and unit tests with coverage'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run test-build -- --publisher sonar-ci-publish'
+  displayName: 'Build vsix extension file'
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: 'build/build/sonar-scanner-vsts-0.0.1-SNAPSHOT-sonarcloud.vsix'
+    targetPath: 'build/sonar-scanner-vsts-0.0.1-SNAPSHOT-sonarcloud.vsix'
     artifact: 'sonar-scanner-azdo-1.0.$(Build.BuildId)-sonarcloud.vsix'
+  displayName: 'Publish artifact'
