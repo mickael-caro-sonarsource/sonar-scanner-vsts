@@ -1,0 +1,41 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Npm@1
+  inputs:
+    command: 'install'
+  displayName: 'npm install'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run install-dep'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run clean'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run validate-ci'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run test-build -- --publisher sonar-ci-publish'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: 'build/build/sonar-scanner-vsts-0.0.1-SNAPSHOT-sonarcloud.vsix'
+    artifact: 'sonar-scanner-azdo-1.0.$(Build.BuildId)-sonarcloud.vsix'
