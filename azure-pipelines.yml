@@ -3,7 +3,7 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-name: Build SonarCloud extension - #BuildId
+name: $(Date:yyyyMMdd)$(Rev:.r)
 
 trigger:
 - master
