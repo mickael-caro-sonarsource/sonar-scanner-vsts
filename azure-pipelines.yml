@@ -51,4 +51,10 @@ steps:
   inputs:
     targetPath: 'build/sonar-scanner-vsts-0.0.1-SNAPSHOT-sonarcloud.vsix'
     artifact: 'sonar-scanner-azdo-1.0.$(Build.BuildId)-sonarcloud.vsix'
-  displayName: 'Publish artifact'
+  displayName: 'Publish SonarCloud artifact'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: 'build/sonar-scanner-vsts-0.0.1-SNAPSHOT-sonarqube.vsix'
+    artifact: 'sonar-scanner-azdo-1.0.$(Build.BuildId)-sonarqube.vsix'
+  displayName: 'Publish SonarQube artifact'
